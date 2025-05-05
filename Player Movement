@@ -1,0 +1,39 @@
+private void MovementPlayer1()
+{
+    float HorizontalInput = Input.GetAxis("Horizontal");
+    float VerticalInput = Input.GetAxis("Vertical");
+    if(CanSuperSpeed==true)
+    {
+        transform.Translate(Vector3.right * HorizontalInput * (_Speed *2.5f)* Time.deltaTime);
+        transform.Translate(Vector3.up * VerticalInput * (_Speed * 2.5f) * Time.deltaTime);
+    }
+    else
+    {
+        transform.Translate(Vector3.right * HorizontalInput * _Speed * Time.deltaTime);
+        transform.Translate(Vector3.up * VerticalInput * _Speed * Time.deltaTime);
+    }
+    
+
+       
+    #region YLimits
+    
+    if (transform.position.y > 4.2)
+    {
+        transform.position = new Vector3(transform.position.x, 4.2f, 0);
+    }
+    else if (transform.position.y < -4.2f)
+    {
+        transform.position = new Vector3(transform.position.x, -4.2f, 0);
+    }
+    #endregion
+    #region XLimits
+    if (transform.position.x > 9.5f)
+    {
+        transform.position = new Vector3(-9.5f, transform.position.y, 0);
+    }
+    else if (transform.position.x < -9.5f)
+    {
+        transform.position = new Vector3(9.5f, transform.position.y, 0);
+    }
+    #endregion
+}
