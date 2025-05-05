@@ -1,0 +1,167 @@
+private void MovementPlayer1()
+{
+    float HorizontalInput = Input.GetAxis("Horizontal");
+    float VerticalInput = Input.GetAxis("Vertical");
+    if(CanSuperSpeed==true)
+    {
+        transform.Translate(Vector3.right * HorizontalInput * (_Speed *2.5f)* Time.deltaTime);
+        transform.Translate(Vector3.up * VerticalInput * (_Speed * 2.5f) * Time.deltaTime);
+    }
+    else
+    {
+        transform.Translate(Vector3.right * HorizontalInput * _Speed * Time.deltaTime);
+        transform.Translate(Vector3.up * VerticalInput * _Speed * Time.deltaTime);
+    }
+    
+
+       
+    #region YLimits
+    
+    if (transform.position.y > 4.2)
+    {
+        transform.position = new Vector3(transform.position.x, 4.2f, 0);
+    }
+    else if (transform.position.y < -4.2f)
+    {
+        transform.position = new Vector3(transform.position.x, -4.2f, 0);
+    }
+    #endregion
+    #region XLimits
+    if (transform.position.x > 9.5f)
+    {
+        transform.position = new Vector3(-9.5f, transform.position.y, 0);
+    }
+    else if (transform.position.x < -9.5f)
+    {
+        transform.position = new Vector3(9.5f, transform.position.y, 0);
+    }
+    #endregion
+}
+    private void shoot()
+    {
+        if (Time.time > _CanFire)
+        {
+            _audioSource.Play();
+            if (CanTripleShot == true)
+            {
+                
+                Instantiate(_TripleShotPrefab,transform.position,Quaternion.identity);
+                
+               
+            }
+            else
+            {
+                Instantiate(_LaserPrefab, transform.position + new Vector3(0, 1.04f, 0), Quaternion.identity);
+
+                
+            }
+            
+            _CanFire = Time.time + _FireRate;
+        }
+       
+
+        
+    }
+   
+    #region TripleShotStarter
+    
+public void TripleShotPowerupOn()
+    {
+        CanTripleShot = true; 
+        StartCoroutine(TripleShotDownRoutine());
+    }
+
+
+   
+public IEnumerator TripleShotDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+
+        CanTripleShot = false;
+
+    }
+    #endregion
+    #region SuperSpeedStarter
+    
+public void SpeedPowerupOn()
+    {
+        CanSuperSpeed = true;
+        StartCoroutine(SpeedShotDownRoutine());
+    }
+    
+public IEnumerator SpeedShotDownRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+
+        CanSuperSpeed = false;
+
+    }
+    #endregion
+    #region ShieldStarter
+    
+
+public void ShieldPowerupOn()
+    {
+        CanShield = true;
+        _ShieldGameObject.SetActive(true);
+        StartCoroutine(ShieldShotDownRoutine());
+    }
+
+    
+
+public IEnumerator ShieldShotDownRoutine()
+    {
+        yield return new WaitForSeconds(10.0f);
+        CanShield = false;
+    }
+    #endregion
+
+   
+
+public void PlayerDamage()
+
+    {       
+
+        if (CanShield == false)
+        {
+            hitCount++;
+            
+            if (hitCount == 1)
+            {
+                _Engines[_RandomEngine].SetActive(true);
+            }
+            if (hitCount == 2 && _RandomEngine != 1)
+            {
+                _Engines[1].SetActive(true);
+            }
+            if (hitCount == 2 && _RandomEngine != 0)
+            {
+                _Engines[0].SetActive(true);
+            }
+
+            PlayerLives--;
+            _uiManager.UpdateLives(PlayerLives);
+
+            if (PlayerLives < 1)
+            {
+                Instantiate(_PlayerExplosionPrefab, transform.position, Quaternion.identity);
+                _gameManager.GameOver = true;
+                _uiManager.ShowTitleScreen(); 
+                Destroy(this.gameObject);
+
+            }
+            
+
+
+        }
+        else
+        {
+            CanShield=false;
+            _ShieldGameObject.SetActive(false);
+            return;
+        }
+        
+    }
+
+
+}
